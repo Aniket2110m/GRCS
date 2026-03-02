@@ -360,8 +360,10 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Render top navbar logos from assets
-logo_bihar_path = Path("assets/bihargovt-logo.png")
-logo_cipl_path = Path("assets/cipl-logo.png")
+# Use absolute path based on script location for Render deployment compatibility
+script_dir = Path(__file__).parent
+logo_bihar_path = script_dir / "assets" / "bihargovt-logo.png"
+logo_cipl_path = script_dir / "assets" / "cipl-logo.png"
 
 if logo_bihar_path.exists() and logo_cipl_path.exists():
     logo_bihar_b64 = base64.b64encode(logo_bihar_path.read_bytes()).decode()
