@@ -108,7 +108,7 @@ elif page == "📊 GRCS Reference Table":
     st.markdown("### Complete GRCS Attribute Reference")
     
     # Read the Excel file
-    excel_file = r"c:\Users\anike\Downloads\GRCS.xlsx"
+    excel_file = "data/GRCS.xlsx"
     df = pd.read_excel(excel_file)
     
     # Display the table
@@ -140,7 +140,7 @@ elif page == "📖 Technical Documentation":
     st.title("📖 GRCS Technical Documentation")
     
     # Read the DOCX file
-    doc_file = r"c:\Users\anike\Downloads\GRCS_Technical_Documentation.docx"
+    doc_file = "data/GRCS_Technical_Documentation.docx"
     doc = Document(doc_file)
     
     # Extract and display document content
@@ -267,7 +267,7 @@ elif page == "⚖️ Weight Calculation":
     
     with st.expander("Complete Weight Calculation Documentation", expanded=False):
         # Read the DOCX file
-        doc_file = r"c:\Users\anike\Downloads\Weight Calculation.docx"
+        doc_file = "data/Weight Calculation.docx"
         doc = Document(doc_file)
         
         # Display all paragraphs
@@ -312,7 +312,7 @@ elif page == "📈 LUSR Calculation":
     st.title("📈 LUSR Calculation")
     
     # Read the DOCX file
-    doc_file = r"c:\Users\anike\Downloads\LUSR Calculation.docx"
+    doc_file = "data/LUSR Calculation.docx"
     doc = Document(doc_file)
     
     # Extract and display document content
