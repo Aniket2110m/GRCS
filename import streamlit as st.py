@@ -172,6 +172,40 @@ st.markdown("""
     .stSelectbox div[data-baseweb="select"] > div {
         background-color: #FFFFFF !important;
     }
+
+    /* Comprehensive dropdown styling */
+    [role="listbox"],
+    [role="listbox"] > div,
+    [role="listbox"] ul,
+    [role="listbox"] li {
+        background-color: #FFFFFF !important;
+        color: #000000 !important;
+    }
+
+    [role="option"] span {
+        color: #000000 !important;
+        background-color: transparent !important;
+    }
+
+    /* Dropdown popup container */
+    div[data-baseweb="popover"] > div {
+        background-color: #FFFFFF !important;
+    }
+
+    ul[role="listbox"] {
+        background-color: #FFFFFF !important;
+    }
+
+    ul[role="listbox"] > li {
+        background-color: #FFFFFF !important;
+        color: #000000 !important;
+    }
+
+    ul[role="listbox"] > li:hover,
+    ul[role="listbox"] > li[aria-selected="true"] {
+        background-color: #E8E8E8 !important;
+        color: #000000 !important;
+    }
     .stButton>button {
         background: linear-gradient(135deg, #90caf9 0%, #64b5f6 100%);
         color: #0d47a1;
