@@ -630,6 +630,240 @@ elif page == "Documentation":
                 df_table = pd.DataFrame(rows, columns=headers)
                 st.dataframe(df_table, width='stretch', hide_index=True)
     
+    # Append scoring engine documentation
+    st.markdown("---")
+    st.markdown("## 10. CONFIDENCE & MATCH SCORING ENGINE")
+    st.markdown("*Enterprise Production Model – GRCS Framework*")
+    
+    st.markdown("""
+The Citizen Golden Record (CGR) implements a mathematically governed, enterprise-grade scoring engine to determine identity match strength, attribute trust, and final merge decisions.
+
+This framework transforms CGR into a Trust-Indexed Identity Infrastructure, ensuring that every merge, update, and survivorship decision is quantifiable, explainable, and policy-aligned.
+
+The Golden Record Confidence Score (GRCS) is computed using a structured three-layer model:
+- **Wi** – Attribute Weight (importance of attribute)
+- **Mi** – Match Strength (quality of match)
+- **Si** – Source Trust Multiplier (authority strength)
+
+### 10.1 Final Golden Record Confidence Score (GRCS)
+
+The production scoring formula is:
+
+**GRCS = ∑ (Wi × Mi × Si) + DeterministicReinforcement − RiskAdjustment**
+
+Where:
+- **Wi** = Attribute Weight (%)
+- **Mi** = Match Strength (0–1 scale)
+- **Si** = Source Trust Multiplier (0–1 scale)
+- **n** = Total attributes evaluated
+- **DeterministicReinforcement** = High-assurance identity boost
+- **RiskAdjustment** = Risk moderation factor (if applicable)
+
+Since total Wi = 100%, GRCS is naturally expressed as a percentage (0–100%).
+
+GRCS is recalculated on every update event and stored historically for audit and trend analysis.
+
+---
+
+### 10.2 Finalized Attribute Weight Allocation (Derived from ACS Model)
+""")
+    
+    # Weights allocation table
+    weights_data = {
+        "S.No": list(range(1, 21)),
+        "Attribute": ["Aadhaar", "Name", "Date of Birth", "Mobile Number", "Gender", "Father's Name", "Mother's Name", 
+                     "Permanent Address", "Correspondence Address", "Caste", "Marital Status", "Education Status", 
+                     "Employment Status", "Ration Card Number", "Ration Card Type", "PAN ID", "Bank Account", 
+                     "Land Ownership", "Motor Ownership", "Nationality"],
+        "Weight (%)": [18, 9, 9, 7, 3, 6, 4, 8, 4, 4, 2, 2, 2, 5, 2, 5, 4, 3, 2, 1],
+        "Match Type": ["Deterministic", "Fuzzy + Phonetic", "Exact > Year", "OTP Verified", "Exact", "Fuzzy", "Fuzzy", 
+                      "Geo-normalized", "Latest Timestamp", "Certificate Verified", "Registry Preferred", "Dept Certified",
+                      "Statutory", "Deterministic", "Exact", "Deterministic", "Masked Deterministic", "Legal Title", 
+                      "Registration Match", "Legal"],
+        "Enterprise Rule": ["UIDAI biometric verified", "UIDAI > Civil Registry precedence", "Civil Registry override", 
+                           "Aadhaar seeded + CBS timestamp", "Legal identity anchor", "Civil Registry priority", 
+                           "Civil Registry validated", "UIDAI > Land Registry", "CBS latest update", "RTPS validated",
+                           "Marriage Registry > Self", "Education DB", "Labour Dept verified", "PDS Household anchor",
+                           "Welfare classification", "Income Tax authority", "CBS source-of-origin", "Land Registry override",
+                           "VAHAN verified", "Civil Registry"]
+    }
+    df_weights = pd.DataFrame(weights_data)
+    st.dataframe(df_weights, width='stretch', hide_index=True)
+    
+    st.markdown("""
+These weights are derived using the Attribute Criticality Score (ACS) model and are configurable under State Data Governance oversight.
+
+---
+
+### 10.3 Attribute Weight Derivation Framework (ACS Model)
+
+Weights are derived using:
+
+**ACS_i = (0.35×L_i + 0.30×U_i + 0.20×S_i + 0.15×R_i)**
+
+Where:
+- **L_i** = Legal Strength (0–10)
+- **U_i** = Uniqueness Power (0–10)
+- **S_i** = Stability Over Time (0–10)
+- **R_i** = Service Impact Risk (0–10)
+
+**Final Weight:**
+**W_i = (ACS_i / ∑ACS) × 100**
+
+This ensures:
+- Legally strong attributes receive higher weight
+- Highly unique identifiers dominate identity resolution
+- Stable attributes carry long-term trust
+- Service-critical attributes influence merge decisions
+
+Weights are periodically reviewed by the State Data Governance Council.
+
+---
+
+### 10.4 Match Strength Model (M_i)
+
+Match Strength reflects how accurately an incoming value matches an existing attribute.
+
+**Deterministic Match:**
+- Exact match → 1.0
+- No match → 0
+
+**Exact Match:**
+- Full match → 1.0
+- Partial match (e.g., year-only DOB) → 0.6
+
+**Fuzzy Match:**
+- Based on Levenshtein / Jaro-Winkler similarity
+- 92% similarity → 0.92
+
+**OTP / Timestamp Based:**
+- Verified & latest → 1.0
+- Verified but old → 0.8
+- Unverified → 0.5
+
+---
+
+### 10.5 Source Authority Index (SAI) & Trust Multiplier (S_i)
+
+Each source is assigned an Authority Score (0–100):
+""")
+    
+    # Authority scores table
+    authority_data = {
+        "Source": ["UIDAI", "Civil Registry", "RTPS Certified Docs", "Income Tax Dept", "Bank CBS", "Land Registry", 
+                   "Transport Registry", "PDS", "Survey DB", "Self Declared"],
+        "Authority Score": [85, 80, 82, 78, 78, 75, 75, 70, 45, 20]
+    }
+    df_authority = pd.DataFrame(authority_data)
+    st.dataframe(df_authority, width='stretch', hide_index=True)
+    
+    st.markdown("""
+**Trust Multiplier:**
+
+**S_i = AuthorityScore / 100**
+
+If RTPS-certified document exists:
+
+**S_i = min(S_i + 0.05, 1.0)**
+
+Authority scores are governed and periodically recalibrated.
+
+---
+
+### 10.6 Deterministic Reinforcement Factor
+
+A reinforcement factor is applied when multi-anchor identity alignment is detected (e.g., Aadhaar + Name + DOB exact match).
+
+This factor provides proportional confidence enhancement for high-assurance identity alignment and is capped to prevent overweight dominance.
+
+---
+
+### 10.7 Risk Adjustment Layer (Optional)
+
+For high-risk or fraud-sensitive attributes, a moderation factor may be applied:
+
+**AdjustedScore = GRCS × (1 − RiskFactor)**
+
+Where:
+- Low Risk → 0
+- Medium Risk → 0.02
+- High Risk → 0.05
+
+This ensures sensitive attributes are risk-calibrated without destabilizing the scoring framework.
+
+---
+
+### 10.8 Decision Engine Thresholds
+""")
+    
+    # Decision thresholds table
+    decision_data = {
+        "GRCS (%)": ["≥ 92%", "80–91%", "70–79%", "60–69%", "<60%"],
+        "Decision": ["Auto Merge", "Conditional Auto Merge + Audit Log", "Steward Assisted Merge", "Manual Validation", "Create New Golden Record"]
+    }
+    df_decision = pd.DataFrame(decision_data)
+    st.dataframe(df_decision, width='stretch', hide_index=True)
+    
+    st.markdown("""
+Thresholds are configurable under governance control.
+
+---
+
+### 10.9 Conflict Resolution Logic
+
+If attribute conflict occurs:
+
+1. Compare Survivorship Priority Index (SPI)
+2. Compare Source Trust Multiplier (S_i)
+3. If dynamic field → latest verified timestamp prevails
+4. If score difference <10% → steward review
+
+This ensures legally authoritative and higher-trust sources prevail.
+
+---
+
+### 10.10 Explainability & Auditability
+
+Each attribute stores:
+- **W_i** (weight)
+- **M_i** (match strength)
+- **S_i** (trust multiplier)
+- Reinforcement applied
+- Risk adjustment applied
+- Final contribution to GRCS
+
+**Example:**
+```json
+{
+  "attribute": "Aadhaar",
+  "weight": 18,
+  "match_strength": 1.0,
+  "trust_multiplier": 0.85,
+  "contribution": 15.3
+}
+```
+
+This guarantees:
+- Full transparency
+- Governance auditability
+- Legal defensibility
+- RTPS compliance
+
+---
+
+### 10.11 Strategic Outcome
+
+The GRCS framework ensures that:
+- Identity is anchored on legally authoritative sources
+- Matching is mathematically governed
+- Weight distribution is policy-driven
+- Conflict resolution is structured
+- Steward intervention is threshold-based
+- Every merge decision is explainable
+
+**The Golden Record is therefore a governed enterprise scoring engine — not a heuristic matching system.**
+""")
+    
     # Download documentation
     st.markdown("### Download Documentation")
     with open(doc_file, 'rb') as f:
