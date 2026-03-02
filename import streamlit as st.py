@@ -125,33 +125,51 @@ st.markdown("""
         font-weight: 600 !important;
     }
 
+    /* Selectbox label visibility */
+    .stSelectbox label {
+        color: #000000 !important;
+        font-weight: 600 !important;
+    }
+
     /* Selectbox readability (Risk Level and similar dropdowns) */
     .stSelectbox [data-baseweb="select"] > div {
-        background-color: #e3f2fd !important;
-        color: #0d47a1 !important;
-        border: 1px solid #64b5f6 !important;
+        background-color: #f5f5f5 !important;
+        color: #000000 !important;
+        border: 2px solid #999999 !important;
     }
 
     .stSelectbox [data-baseweb="select"] input,
     .stSelectbox [data-baseweb="select"] span,
     .stSelectbox [data-baseweb="select"] div {
-        color: #0d47a1 !important;
+        color: #000000 !important;
+        background-color: #f5f5f5 !important;
     }
 
     div[role="listbox"] {
-        background-color: #e3f2fd !important;
-        border: 1px solid #64b5f6 !important;
+        background-color: #f5f5f5 !important;
+        border: 2px solid #999999 !important;
     }
 
     div[role="option"] {
-        background-color: #e3f2fd !important;
-        color: #0d47a1 !important;
+        background-color: #f5f5f5 !important;
+        color: #000000 !important;
+        font-weight: 500 !important;
     }
 
     div[role="option"][aria-selected="true"],
     div[role="option"]:hover {
-        background-color: #bbdefb !important;
-        color: #0d47a1 !important;
+        background-color: #cccccc !important;
+        color: #000000 !important;
+        font-weight: 700 !important;
+    }
+
+    /* Additional selectbox styling */
+    .stSelectbox div[data-baseweb="select"] {
+        background-color: #f5f5f5 !important;
+    }
+
+    .stSelectbox div[data-baseweb="select"] > div {
+        background-color: #f5f5f5 !important;
     }
     .stButton>button {
         background: linear-gradient(135deg, #90caf9 0%, #64b5f6 100%);
