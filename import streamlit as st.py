@@ -10,6 +10,12 @@ st.set_page_config(page_title="GRCS Simulator", layout="wide", initial_sidebar_s
 # Custom CSS for modern UI with top navbar
 st.markdown("""
 <style>
+    /* Hide Streamlit header and toolbar */
+    header {display: none !important;}
+    #MainMenu {display: none !important;}
+    .stDeployButton {display: none !important;}
+    footer {display: none !important;}
+    
     /* Hide default sidebar */
     [data-testid="collapsedControl"] {display: none;}
     
@@ -80,13 +86,31 @@ st.markdown("""
         background: linear-gradient(135deg, #2196f3 0%, #1565c0 100%);
     }
     
-    /* Expander styling - Better Contrast */
+    /* Expander Header Text - SIMPLE AND DIRECT */
     .streamlit-expanderHeader {
-        background-color: white;
-        border-radius: 8px;
-        font-weight: 700;
-        color: #0d47a1;
-        border: 2px solid #64b5f6;
+        background-color: #1565c0 !important;
+        color: #ffffff !important;
+    }
+    
+    .streamlit-expanderHeader p,
+    .streamlit-expanderHeader span,
+    .streamlit-expanderHeader div,
+    .streamlit-expanderHeader * {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        font-size: 15px !important;
+    }
+    
+    /* Make text inside expandable headers white */
+    [data-testid="stExpanderHeader"],
+    button.st-emotion-cache-q16mip {
+        color: white !important;
+    }
+    
+    [data-testid="stExpanderHeader"] span,
+    button.st-emotion-cache-q16mip span {
+        color: white !important;
+        font-weight: 700 !important;
     }
     
     /* Dataframe styling */
@@ -126,6 +150,7 @@ st.markdown("""
     label {
         color: #0d47a1 !important;
         font-weight: 700 !important;
+        font-size: 14px !important;
     }
 
 </style>
