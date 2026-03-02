@@ -1,27 +1,248 @@
 import streamlit as st
 import pandas as pd
 from docx import Document
+import base64
+from pathlib import Path
 
 # Page configuration
-st.set_page_config(page_title="GRCS Simulator", layout="wide")
+st.set_page_config(page_title="GRCS Simulator", layout="wide", initial_sidebar_state="collapsed")
 
-# Custom CSS to reduce font sizes and improve styling
+# Custom CSS for modern UI with top navbar
 st.markdown("""
 <style>
-    h1 {font-size: 28px !important; margin-bottom: 5px;}
-    h2 {font-size: 18px !important; margin-top: 10px; margin-bottom: 8px;}
-    h3 {font-size: 14px !important; margin-top: 8px; margin-bottom: 5px;}
-    p, label, div {font-size: 12px !important;}
-    .stSlider, .stSelectbox, .stCheckbox {font-size: 11px !important;}
+    /* Hide default sidebar */
+    [data-testid="collapsedControl"] {display: none;}
+    
+    /* Light Blue Background */
+    .stApp {
+        background: linear-gradient(180deg, #e3f2fd 0%, #bbdefb 100%);
+    }
+    
+    /* Main container styling */
+    .main {
+        padding-top: 0rem !important;
+        background: transparent;
+    }
+    .block-container {
+        padding-top: 2rem !important;
+        background: transparent;
+    }
+    
+    /* Typography - Improved Visibility */
+    h1 {font-size: 32px !important; font-weight: 700 !important; color: #0d47a1; margin-bottom: 1rem;}
+    h2 {font-size: 22px !important; font-weight: 600 !important; color: #1565c0; margin-top: 1.5rem; margin-bottom: 1rem;}
+    h3 {font-size: 16px !important; font-weight: 600 !important; color: #1976d2; margin-top: 1rem; margin-bottom: 0.5rem;}
+    p, label, div {font-size: 15px !important; color: #263238; font-weight: 500;}
+    
+    /* Centered Page Header */
+    .page-header {
+        text-align: center;
+        padding: 1.5rem 1.5rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(13, 71, 161, 0.12);
+        margin: 1rem auto 1.5rem auto;
+        max-width: 900px;
+        border: 2px solid #2196f3;
+    }
+    .page-header h1 {
+        font-size: 28px !important;
+        color: #0d47a1 !important;
+        margin-bottom: 0.5rem !important;
+        font-weight: 800 !important;
+    }
+    .page-header p {
+        font-size: 13px !important;
+        color: #37474f !important;
+        margin: 0 !important;
+        font-weight: 400 !important;
+    }
+    
+    /* Streamlit components - Better Visibility */
+    .stSlider, .stSelectbox, .stCheckbox {
+        font-size: 14px !important;
+        color: #263238 !important;
+        font-weight: 600 !important;
+    }
+    .stButton>button {
+        background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+        color: white;
+        border: none;
+        padding: 0.6rem 2rem;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 14px;
+        transition: all 0.3s;
+    }
+    .stButton>button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(25, 118, 210, 0.5);
+        background: linear-gradient(135deg, #2196f3 0%, #1565c0 100%);
+    }
+    
+    /* Expander styling - Better Contrast */
+    .streamlit-expanderHeader {
+        background-color: white;
+        border-radius: 8px;
+        font-weight: 700;
+        color: #0d47a1;
+        border: 2px solid #64b5f6;
+    }
+    
+    /* Dataframe styling */
+    .dataframe {
+        border: 2px solid #2196f3 !important;
+        border-radius: 8px;
+        background: white !important;
+    }
+    
+    /* Metric styling */
+    [data-testid="stMetricValue"] {
+        font-size: 26px !important;
+        color: #0d47a1 !important;
+        font-weight: 800 !important;
+    }
+    
+    /* Custom cards - Blue Theme */
+    .info-card {
+        background: linear-gradient(135deg, #2196f3 0%, #1565c0 100%);
+        padding: 1.5rem;
+        border-radius: 12px;
+        color: white;
+        margin-bottom: 1rem;
+        box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+    }
+    
+    .result-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        border-left: 5px solid #2196f3;
+        box-shadow: 0 4px 16px rgba(13, 71, 161, 0.15);
+        margin: 1rem 0;
+    }
+    
+    /* Input labels with better visibility */
+    label {
+        color: #0d47a1 !important;
+        font-weight: 700 !important;
+    }
+
 </style>
 """, unsafe_allow_html=True)
 
-# Sidebar Navigation
-st.sidebar.markdown("## 📌 Navigation")
-page = st.sidebar.radio("Select Page:", ["🎯 Simulator", "📊 GRCS Reference Table", "📖 Technical Documentation", "⚖️ Weight Calculation", "📈 LUSR Calculation"], label_visibility="collapsed")
+# Top Navbar with Logos and Navigation
+st.markdown("""
+<style>
+    .top-navbar {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 1rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: -6rem -6rem 2rem -6rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    
+    .navbar-logos {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+    }
+    
+    .navbar-logo {
+        height: 50px;
+        width: auto;
+        background: white;
+        padding: 8px;
+        border-radius: 8px;
+    }
+    
+    .navbar-title {
+        color: white;
+        font-size: 24px;
+        font-weight: 700;
+        margin: 0 2rem;
+        flex-grow: 1;
+    }
+    
+    .nav-tabs {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        background: rgba(255,255,255,0.1);
+        padding: 0.5rem;
+        border-radius: 10px;
+    }
+    
+    .nav-tab {
+        background: rgba(255,255,255,0.2);
+        color: white;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 13px;
+        transition: all 0.3s;
+        cursor: pointer;
+        border: 2px solid transparent;
+        white-space: nowrap;
+    }
+    
+    .nav-tab:hover {
+        background: white;
+        color: #667eea;
+        transform: translateY(-2px);
+    }
+    
+    .nav-tab.active {
+        background: white;
+        color: #667eea;
+        border-color: white;
+    }
+</style>
+""", unsafe_allow_html=True)
 
-if page == "🎯 Simulator":
-    st.title("🎯 Golden Record Confidence Score (GRCS) Simulator")
+# Navigation tabs
+col1, col2, col3, col4, col5 = st.columns(5)
+with col1:
+    simulator_btn = st.button("🎯 Simulator", use_container_width=True, type="secondary" if st.session_state.get("page", "Simulator") != "Simulator" else "primary")
+with col2:
+    ref_btn = st.button("📊 GRCS Reference", use_container_width=True, type="secondary" if st.session_state.get("page", "Simulator") != "Reference" else "primary")
+with col3:
+    doc_btn = st.button("📖 Documentation", use_container_width=True, type="secondary" if st.session_state.get("page", "Simulator") != "Documentation" else "primary")
+with col4:
+    weight_btn = st.button("⚖️ Weight Calc", use_container_width=True, type="secondary" if st.session_state.get("page", "Simulator") != "Weight" else "primary")
+with col5:
+    lusr_btn = st.button("📈 LUSR Calc", use_container_width=True, type="secondary" if st.session_state.get("page", "Simulator") != "LUSR" else "primary")
+
+# Handle navigation
+if simulator_btn:
+    st.session_state.page = "Simulator"
+elif ref_btn:
+    st.session_state.page = "Reference"
+elif doc_btn:
+    st.session_state.page = "Documentation"
+elif weight_btn:
+    st.session_state.page = "Weight"
+elif lusr_btn:
+    st.session_state.page = "LUSR"
+
+# Initialize default page
+if "page" not in st.session_state:
+    st.session_state.page = "Simulator"
+
+page = st.session_state.page
+
+st.markdown("---")
+
+if page == "Simulator":
+    st.markdown('''
+    <div class="page-header">
+        <h1>🎯 Golden Record Confidence Score (GRCS) Simulator</h1>
+        <p>Calculate confidence scores for data matching and golden record creation</p>
+    </div>
+    ''', unsafe_allow_html=True)
 
     attributes = {
         "Aadhaar": 18,
@@ -102,8 +323,8 @@ if page == "🎯 Simulator":
 
     st.subheader(f"Decision: {decision}")
 
-elif page == "📊 GRCS Reference Table":
-    st.title("📊 GRCS Reference Table")
+elif page == "Reference":
+    st.markdown('<div class="info-card"><h1 style="color: white; margin: 0;">📊 GRCS Reference Table</h1><p style="color: rgba(255,255,255,0.9); margin-top: 0.5rem;">Complete attribute reference with weights and matching rules</p></div>', unsafe_allow_html=True)
     
     st.markdown("### Complete GRCS Attribute Reference")
     
@@ -136,8 +357,8 @@ elif page == "📊 GRCS Reference Table":
         mime="text/csv"
     )
 
-elif page == "📖 Technical Documentation":
-    st.title("📖 GRCS Technical Documentation")
+elif page == "Documentation":
+    st.markdown('<div class="info-card"><h1 style="color: white; margin: 0;">📖 Technical Documentation</h1><p style="color: rgba(255,255,255,0.9); margin-top: 0.5rem;">Comprehensive GRCS methodology and matching algorithms</p></div>', unsafe_allow_html=True)
     
     # Read the DOCX file
     doc_file = "data/GRCS_Technical_Documentation.docx"
@@ -194,8 +415,8 @@ elif page == "📖 Technical Documentation":
         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     )
 
-elif page == "⚖️ Weight Calculation":
-    st.title("⚖️ Weight Calculation")
+elif page == "Weight":
+    st.markdown('<div class="info-card"><h1 style="color: white; margin: 0;">⚖️ Weight Calculation</h1><p style="color: rgba(255,255,255,0.9); margin-top: 0.5rem;">Calculate attribute weights using ACS model (L, U, S, R parameters)</p></div>', unsafe_allow_html=True)
     
     # ========== WEIGHT CALCULATION CALCULATOR ==========
     st.header("🧮 Weight Calculation Calculator (Based on ACS Model)")
@@ -308,8 +529,8 @@ elif page == "⚖️ Weight Calculation":
         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     )
 
-elif page == "📈 LUSR Calculation":
-    st.title("📈 LUSR Calculation")
+elif page == "LUSR":
+    st.markdown('<div class="info-card"><h1 style="color: white; margin: 0;">📈 LUSR Calculation</h1><p style="color: rgba(255,255,255,0.9); margin-top: 0.5rem;">LUSR methodology and calculation framework</p></div>', unsafe_allow_html=True)
     
     # Read the DOCX file
     doc_file = "data/LUSR Calculation.docx"
