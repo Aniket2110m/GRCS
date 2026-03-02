@@ -135,7 +135,7 @@ st.markdown("""
     .stSelectbox [data-baseweb="select"] > div {
         background-color: #FFFFFF !important;
         color: #000000 !important;
-        border: 2px solid #999999 !important;
+        border: 2px solid #FFFFFF !important;
     }
 
     .stSelectbox [data-baseweb="select"] input,
@@ -147,7 +147,7 @@ st.markdown("""
 
     div[role="listbox"] {
         background-color: #FFFFFF !important;
-        border: 2px solid #999999 !important;
+        border: 2px solid #FFFFFF !important;
     }
 
     div[role="option"] {
