@@ -7,6 +7,23 @@ from pathlib import Path
 # Page configuration
 st.set_page_config(page_title="GRCS Simulator", layout="wide", initial_sidebar_state="collapsed")
 
+original_st_dataframe = st.dataframe
+
+
+def render_centered_dataframe(data, **kwargs):
+    if isinstance(data, pd.DataFrame):
+        styled_df = data.style.set_properties(**{"text-align": "center"}).set_table_styles(
+            [
+                {"selector": "th", "props": [("text-align", "center")]},
+                {"selector": "td", "props": [("text-align", "center")]},
+            ]
+        )
+        return original_st_dataframe(styled_df, **kwargs)
+    return original_st_dataframe(data, **kwargs)
+
+
+st.dataframe = render_centered_dataframe
+
 # Define GRCS Reference Data (Global - used across Simulator, Weight, and Reference pages)
 reference_data = [
     {"S.No": 1, "Attribute": "Aadhaar", "Weight (%)": 18, "Match Type": "Deterministic", "Enterprise Rule": "UIDAI biometric verified"},
@@ -83,11 +100,34 @@ st.markdown("""
     h3 {font-size: 16px !important; font-weight: 600 !important; color: #1976d2; margin-top: 1rem; margin-bottom: 0.5rem;}
     p, label, div {font-size: 15px !important; color: #263238; font-weight: 500;}
 
+    /* Text alignment */
+    [data-testid="stMarkdownContainer"] p,
+    [data-testid="stMarkdownContainer"] li,
+    [data-testid="stMarkdownContainer"] span,
+    .stText,
+    .stCaption {
+        text-align: justify !important;
+    }
+
+    /* Table alignment */
+    [data-testid="stTable"] table th,
+    [data-testid="stTable"] table td {
+        text-align: center !important;
+    }
+
+    [data-testid="stDataFrame"] th,
+    [data-testid="stDataFrame"] td,
+    [data-testid="stDataFrame"] [role="columnheader"],
+    [data-testid="stDataFrame"] [role="gridcell"] {
+        text-align: center !important;
+        justify-content: center !important;
+    }
+
     /* Override Streamlit default dark text shades */
     [data-testid="stAppViewContainer"] {
         --text-color: #0d47a1;
     }
-    .stApp [style*="color:#262730"],
+    .stApp [style*="color:#FFFFFF"],
     .stApp [style*="color: #262730"],
     .stApp [style*="color:rgb(38,39,48)"],
     .stApp [style*="color: rgb(38, 39, 48)"] {
@@ -203,7 +243,7 @@ st.markdown("""
 
     ul[role="listbox"] > li:hover,
     ul[role="listbox"] > li[aria-selected="true"] {
-        background-color: #E8E8E8 !important;
+           background-color: #E1E1E1 !important;
         color: #000000 !important;
     }
     .stButton>button {
@@ -282,11 +322,13 @@ st.markdown("""
         color: #0d47a1;
         margin-bottom: 1rem;
         box-shadow: 0 6px 20px rgba(100, 181, 246, 0.35);
+        text-align: center;
     }
 
     .info-card h1,
     .info-card p {
         color: #0d47a1 !important;
+        text-align: center !important;
     }
     
     .result-card {
