@@ -213,38 +213,33 @@ st.markdown("""
         background-color: #FFFFFF !important;
     }
 
-    /* Comprehensive dropdown styling */
-    [role="listbox"],
-    [role="listbox"] > div,
-    [role="listbox"] ul,
-    [role="listbox"] li {
+    /* Comprehensive dropdown styling (popover layer) */
+    div[data-baseweb="popover"],
+    div[data-baseweb="popover"] > div,
+    div[data-baseweb="popover"] [role="listbox"],
+    div[data-baseweb="popover"] ul,
+    div[data-baseweb="popover"] li {
         background-color: #FFFFFF !important;
-        color: #000000 !important;
+        color: #0d2238 !important;
+        border-color: #90caf9 !important;
     }
 
-    [role="option"] span {
-        color: #000000 !important;
-        background-color: transparent !important;
-    }
-
-    /* Dropdown popup container */
-    div[data-baseweb="popover"] > div {
+    div[data-baseweb="popover"] [role="option"],
+    div[data-baseweb="popover"] [role="option"] *,
+    div[data-baseweb="popover"] li,
+    div[data-baseweb="popover"] li * {
         background-color: #FFFFFF !important;
+        color: #0d2238 !important;
+        opacity: 1 !important;
     }
 
-    ul[role="listbox"] {
-        background-color: #FFFFFF !important;
-    }
-
-    ul[role="listbox"] > li {
-        background-color: #FFFFFF !important;
-        color: #000000 !important;
-    }
-
-    ul[role="listbox"] > li:hover,
-    ul[role="listbox"] > li[aria-selected="true"] {
-           background-color: #E1E1E1 !important;
-        color: #000000 !important;
+    div[data-baseweb="popover"] [role="option"]:hover,
+    div[data-baseweb="popover"] [role="option"][aria-selected="true"],
+    div[data-baseweb="popover"] li:hover,
+    div[data-baseweb="popover"] li[aria-selected="true"] {
+        background-color: #E3F2FD !important;
+        color: #0d2238 !important;
+        border-left: 3px solid #2196f3 !important;
     }
     .stButton>button {
         background: linear-gradient(135deg, #90caf9 0%, #64b5f6 100%);
@@ -262,42 +257,46 @@ st.markdown("""
         background: linear-gradient(135deg, #bbdefb 0%, #90caf9 100%);
     }
     
-    /* Expander Header Text - SIMPLE AND DIRECT */
-    .streamlit-expanderHeader {
-        background-color: #90caf9 !important;
-        color: #0d47a1 !important;
+    /* Expander / dropdown bar styling (readable + consistent) */
+    [data-testid="stExpander"] {
+        border: 1px solid #90caf9 !important;
+        border-radius: 10px !important;
+        overflow: hidden !important;
+        background: #ffffff !important;
     }
-    
-    .streamlit-expanderHeader p,
-    .streamlit-expanderHeader span,
-    .streamlit-expanderHeader div,
-    .streamlit-expanderHeader * {
+
+    [data-testid="stExpander"] [data-testid="stExpanderHeader"],
+    [data-testid="stExpander"] summary {
+        background: #e3f2fd !important;
+        color: #0d47a1 !important;
+        border: 0 !important;
+    }
+
+    [data-testid="stExpander"] [data-testid="stExpanderHeader"] *,
+    [data-testid="stExpander"] summary * {
         color: #0d47a1 !important;
         font-weight: 700 !important;
         font-size: 15px !important;
     }
-    
-    /* Make text inside expandable headers white */
-    [data-testid="stExpanderHeader"],
-    button.st-emotion-cache-q16mip {
-        color: #0d47a1 !important;
-    }
-    
-    [data-testid="stExpanderHeader"] span,
-    button.st-emotion-cache-q16mip span {
-        color: #0d47a1 !important;
-        font-weight: 700 !important;
+
+    [data-testid="stExpander"] summary:hover,
+    [data-testid="stExpander"] [data-testid="stExpanderHeader"]:hover {
+        background: #d2e8fb !important;
     }
 
-    /* Aadhaar section header (first attribute expander) */
-    [data-testid="stExpander"]:first-of-type [data-testid="stExpanderHeader"] {
-        background-color: #ffe082 !important;
-        color: #5d4037 !important;
-        border: 1px solid #ffca28 !important;
+    [data-testid="stExpander"] summary:focus,
+    [data-testid="stExpander"] summary:focus-visible,
+    [data-testid="stExpander"] [data-testid="stExpanderHeader"]:focus,
+    [data-testid="stExpander"] [data-testid="stExpanderHeader"]:focus-visible {
+        background: #d2e8fb !important;
+        color: #0d47a1 !important;
+        outline: 2px solid #64b5f6 !important;
+        outline-offset: -2px !important;
     }
 
-    [data-testid="stExpander"]:first-of-type [data-testid="stExpanderHeader"] * {
-        color: #5d4037 !important;
+    [data-testid="stExpander"] svg {
+        fill: #0d47a1 !important;
+        color: #0d47a1 !important;
     }
     
     /* Dataframe styling */
